@@ -1,0 +1,23 @@
+FROM debian:latest
+
+ENV OPENDYLAN_BIN "opendylan-2020.1-x86_64-linux.tar.bz2"
+
+ENV OPENDYLAN_PKG "autoconf automake build-essential clang gcc git make lldb libgc-dev libunwind-dev"
+
+WORKDIR /build/dylan
+
+RUN apt-get update \
+    && apt-get -y install ${OPENDYLAN_PKG} \
+    && git clone "https://github.com/dylan-lang/opendylan.git" --recursive
+
+COPY "${OPENDYLAN_BIN}" "bootstrap.tar.bz2"
+
+RUN tar xfvj "bootstrap.tar.bz2" \
+ && mv opendylan-* bootstrap
+
+RUN cd opendylan \
+ && ./autogen.sh \
+ && ./configure --prefix=/opt/opendylan PATH="/build/dylan/bootstrap/bin:${PATH}"
+
+RUN cd opendylan \
+ && make
