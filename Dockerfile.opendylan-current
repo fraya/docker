@@ -1,5 +1,5 @@
 
-FROM opendylan-release:latest AS depends
+FROM opendylan:release AS depends
 
 ENV OPENDYLAN_DEPENDS "dumb-init autoconf automake build-essential clang gcc git make libgc-dev libunwind-dev"
 
