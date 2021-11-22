@@ -1,0 +1,28 @@
+FROM opendylan-release:latest
+
+ENV OPENDYLAN_CURRENT_DEPENDS "dumb-init autoconf automake build-essential clang gcc git make lldb libgc-dev libunwind-dev"
+
+WORKDIR /build
+
+RUN apt-get update \
+ && apt-get -y install ${OPENDYLAN_CURRENT_DEPENDS} \
+ && git clone "https://github.com/dylan-lang/opendylan.git" --recursive
+
+RUN cd opendylan \
+ && ./autogen.sh \
+ && ./configure --prefix=/opt/opendylan-current PATH="/opt/opendylan-release/bin:${PATH}"
+
+RUN cd opendylan \
+ && make PATH="/opt/opendylan-release/bin:${PATH}" \
+ && make install PATH="/opt/opendylan-release/bin:${PATH}"
+
+RUN cd /opt \
+ && rm -r opendylan opendylan-release \
+ && ln -s opendylan-current opendylan \
+ && rm -rf "${OPENDYLAN_DIR}"
+
+ENV OPENDYLAN_VERSION current
+ENV OPENDYLAN_DIR "opendylan-${OPENDYLAN_VERSION}"
+
+ENTRYPOINT [ "dumb-init", "dylan-environment" ]
+
