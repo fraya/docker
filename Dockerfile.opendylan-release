@@ -11,7 +11,8 @@ ENV OPENDYLAN_RELEASE_DEPENDS "dumb-init bzip2"
 WORKDIR /opt
 
 RUN apt-get update \
- && apt-get -y install ${OPENDYLAN_RELEASE_DEPENDS}
+ && apt-get -y install ${OPENDYLAN_RELEASE_DEPENDS} \
+ && apt-get clean
 
 COPY "${OPENDYLAN_TAR}" .
 
