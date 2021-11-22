@@ -1,9 +1,9 @@
 
-###########################################################
-# Create an image containing just our runtime dependencies
-###########################################################
+########################################################
+# Create a common base image for build and actual image
+########################################################
 
-FROM debian:latest as depends
+FROM debian:latest as common
 
 # Add some manifest variables
 ENV OPENDYLAN_VERSION "2020.1"
@@ -21,15 +21,18 @@ RUN apt-get update \
 # Create an image to extract the tarball in
 ############################################
 
-FROM depends as build
+FROM common AS build
 
 WORKDIR /opt
 
+# Name of our distribution directory and tarball
 ENV OPENDYLAN_DIR "opendylan-${OPENDYLAN_VERSION}"
 ENV OPENDYLAN_TBZ "opendylan-${OPENDYLAN_VERSION}-${OPENDYLAN_PLATFORM}.tar.bz2"
 
+# Copy over the tarball
 COPY "${OPENDYLAN_TBZ}" .
 
+# Extract the tarball and create some symlinks
 RUN tar xfj "${OPENDYLAN_TBZ}" \
  && ln -s "${OPENDYLAN_DIR}" opendylan \
  && ln -s "${OPENDYLAN_DIR}" opendylan-release \
@@ -39,7 +42,9 @@ RUN tar xfj "${OPENDYLAN_TBZ}" \
 # Create the actual image
 ##########################
 
-FROM depends
+FROM common
+
+WORKDIR /opt
 
 # Copy the contents of the tarball
 COPY --from=build /opt /opt
@@ -49,4 +54,3 @@ ENV PATH "/opt/opendylan/bin:${PATH}"
 
 # Set the entrypoint
 ENTRYPOINT [ "dumb-init", "dylan-environment" ]
-
