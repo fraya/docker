@@ -6,6 +6,7 @@ WORKDIR /build
 
 RUN apt-get update \
  && apt-get -y install ${OPENDYLAN_CURRENT_DEPENDS} \
+ && apt-get clean \
  && git clone "https://github.com/dylan-lang/opendylan.git" --recursive
 
 RUN cd opendylan \
