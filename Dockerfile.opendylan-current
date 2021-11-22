@@ -32,6 +32,10 @@ RUN rm -r opendylan opendylan-release \
 
 FROM depends
 
+WORKDIR /opt
+
+RUN rm -rf /opt
+
 COPY --from=build /opt /opt
 
 ENV OPENDYLAN_PLATFORM "x86_64-linux"
