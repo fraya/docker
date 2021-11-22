@@ -1,25 +1,34 @@
-FROM debian:latest
+
+FROM debian:latest as depends
 
 ENV OPENDYLAN_PLATFORM "x86_64-linux"
 ENV OPENDYLAN_VERSION "2020.1"
-
 ENV OPENDYLAN_DIR "opendylan-${OPENDYLAN_VERSION}"
-ENV OPENDYLAN_TBZ "opendylan-${OPENDYLAN_VERSION}-${OPENDYLAN_PLATFORM}.tar.bz2"
 
-ENV OPENDYLAN_RELEASE_DEPENDS "dumb-init bzip2"
+ENV OPENDYLAN_DEPENDS "dumb-init bzip2"
+
+RUN apt-get update \
+ && apt-get -y install ${OPENDYLAN_DEPENDS} \
+ && apt-get clean
+
+
+FROM depends as build
+
+ENV OPENDYLAN_TBZ "opendylan-${OPENDYLAN_VERSION}-${OPENDYLAN_PLATFORM}.tar.bz2"
 
 WORKDIR /opt
 
-RUN apt-get update \
- && apt-get -y install ${OPENDYLAN_RELEASE_DEPENDS} \
- && apt-get clean
-
-COPY "${OPENDYLAN_TAR}" .
+COPY "${OPENDYLAN_TBZ}" .
 
 RUN tar xfj "${OPENDYLAN_TBZ}" \
  && ln -s "${OPENDYLAN_DIR}" opendylan \
  && ln -s "${OPENDYLAN_DIR}" opendylan-release \
  && rm "${OPENDYLAN_TBZ}"
+
+
+FROM depends
+
+COPY --from=build /opt /opt
 
 ENV PATH "/opt/opendylan/bin:${PATH}"
 
