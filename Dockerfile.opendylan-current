@@ -15,7 +15,8 @@ RUN cd opendylan \
 
 RUN cd opendylan \
  && make PATH="/opt/opendylan-release/bin:${PATH}" \
- && make install PATH="/opt/opendylan-release/bin:${PATH}"
+ && make install PATH="/opt/opendylan-release/bin:${PATH}" \
+ && make clean
 
 RUN cd /opt \
  && rm -r opendylan opendylan-release \
