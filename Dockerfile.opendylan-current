@@ -1,47 +1,77 @@
 
-FROM opendylan:release AS depends
+###################################################
+# Create an image containing just our dependencies
+###################################################
 
-ENV OPENDYLAN_DEPENDS "dumb-init autoconf automake build-essential clang gcc git make libgc-dev libunwind-dev"
+ARG OPENDYLAN_BASE
 
+FROM ${OPENDYLAN_BASE} AS depends
+
+# Add some manifest variables
+ENV OPENDYLAN_VERSION "master"
+ENV OPENDYLAN_PLATFORM "x86_64-linux"
+
+# Our dependencies
+ENV OPENDYLAN_DEPENDS "dumb-init autoconf automake build-essential bzip2 clang git llvm make libgc-dev libunwind-dev"
+
+# Install dependencies
 RUN apt-get update \
  && apt-get -y install ${OPENDYLAN_DEPENDS} \
  && apt-get clean
 
+##########################################
+# Create an image to perform the build in
+##########################################
 
 FROM depends AS build
 
 WORKDIR /build
 
-RUN git clone "https://github.com/dylan-lang/opendylan.git" --recursive
+# Variables for the bootstrap compiler
+ENV RELEASE_VERSION "2020.1"
+ENV RELEASE_PLATFORM "x86_64-linux"
+ENV RELEASE_DIR "opendylan-${RELEASE_VERSION}"
+ENV RELEASE_TBZ "opendylan-${RELEASE_VERSION}-${RELEASE_PLATFORM}.tar.bz2"
 
+# Copy the bootstrap compiler
+COPY "${RELEASE_TBZ}" .
+
+# Extract the bootstrap compiler
+RUN tar xfj "${RELEASE_TBZ}" \
+ && mv ${RELEASE_DIR} release
+
+# Clone the git repository
+RUN git clone "https://github.com/dylan-lang/opendylan.git" --recursive \
+ && cd opendylan \
+ && git checkout ${OPENDYLAN_VERSION}
+
+# Configure opendylan
 RUN cd opendylan \
  && ./autogen.sh \
- && ./configure --prefix=/opt/opendylan-current PATH="/opt/opendylan-release/bin:${PATH}"
+ && ./configure --prefix=/opt/opendylan PATH="/build/release/bin:${PATH}"
 
+# Build and install opendylan
 RUN cd opendylan \
- && make PATH="/opt/opendylan-release/bin:${PATH}" \
- && make install PATH="/opt/opendylan-release/bin:${PATH}" \
+ && make PATH="/build/release/bin:${PATH}" \
+ && make install \
  && make clean
 
-WORKDIR /opt
-
-RUN rm -r opendylan opendylan-release \
- && ln -s opendylan-current opendylan \
- && rm -rf "${OPENDYLAN_DIR}"
-
+##########################
+# Create the actual image
+##########################
 
 FROM depends
 
 WORKDIR /opt
 
-RUN rm -rf /opt
-
+# Copy the newly build distribution
 COPY --from=build /opt /opt
 
-ENV OPENDYLAN_PLATFORM "x86_64-linux"
-ENV OPENDYLAN_VERSION "current"
+# Add opendylan to the PATH
+ENV PATH "/opt/opendylan/bin:${PATH}"
 
-ENV OPENDYLAN_DIR "opendylan-${OPENDYLAN_VERSION}"
+# Set DYLAN variable
+ENV DYLAN "/opt/opendylan"
 
+# Set the entrypoint
 ENTRYPOINT [ "dumb-init", "dylan-environment" ]
-

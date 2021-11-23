@@ -3,7 +3,9 @@
 # Create a common base image for build and actual image
 ########################################################
 
-FROM debian:latest as common
+ARG OPENDYLAN_BASE
+
+FROM ${OPENDYLAN_BASE} as common
 
 # Add some manifest variables
 ENV OPENDYLAN_VERSION "2020.1"
@@ -51,6 +53,9 @@ COPY --from=build /opt /opt
 
 # Add opendylan to the PATH
 ENV PATH "/opt/opendylan/bin:${PATH}"
+
+# Set DYLAN variable
+ENV DYLAN "/opt/opendylan"
 
 # Set the entrypoint
 ENTRYPOINT [ "dumb-init", "dylan-environment" ]
