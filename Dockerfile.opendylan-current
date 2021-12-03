@@ -47,7 +47,8 @@ COPY "${RELEASE_TBZ}" .
 
 # Extract the bootstrap compiler
 RUN tar xfj "${RELEASE_TBZ}" \
- && mv ${RELEASE_DIR} release
+ && mv ${RELEASE_DIR} release \
+ && rm ${RELEASE_TBZ}
 
 # Clone the git repository
 RUN git clone "https://github.com/dylan-lang/opendylan.git" --recursive \
