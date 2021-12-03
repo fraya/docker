@@ -50,21 +50,15 @@ RUN tar xfj "${RELEASE_TBZ}" \
  && mv ${RELEASE_DIR} release \
  && rm ${RELEASE_TBZ}
 
-# Clone the git repository
+# Check out, build and install opendylan
 RUN git clone "https://github.com/dylan-lang/opendylan.git" --recursive \
  && cd opendylan \
- && git checkout ${OPENDYLAN_VERSION}
-
-# Configure opendylan
-RUN cd opendylan \
+ && git checkout ${OPENDYLAN_VERSION} \
  && ./autogen.sh \
- && ./configure --prefix=/opt/opendylan PATH="/build/release/bin:${PATH}"
-
-# Build and install opendylan
-RUN cd opendylan \
+ && ./configure --prefix=/opt/opendylan PATH="/build/release/bin:${PATH}" \
  && make PATH="/build/release/bin:${PATH}" \
- && make install \
- && make clean
+ && make install
+
 
 ##########################
 # Create the actual image
