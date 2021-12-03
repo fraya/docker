@@ -1,32 +1,41 @@
 #!/bin/bash
 
-docker build --network host \
-       -f Dockerfile.opendylan-release \
-       --build-arg "OPENDYLAN_BASE=debian:bullseye" \
-       -t opendylan:release-base \
-       -t opendylan:release-base-bullseye \
-       .
+set -e
 
-docker build --network host \
-       -f Dockerfile.opendylan-current \
-       --build-arg "OPENDYLAN_BASE=debian:bullseye" \
-       -t opendylan:current-base \
-       -t opendylan:current-base-bullseye \
-	   .
+DISTS="debian:buster debian:bullseye"
+#" ubuntu:impish ubuntu:jammy"
 
-docker build --network host \
-       -f Dockerfile.opendylan-devel \
-       --build-arg "OPENDYLAN_BASE=opendylan:release-base-bullseye" \
-       -t opendylan:release \
-       -t opendylan:release-bullseye \
-       empty
+distrel() {
+    local dist="$1"
+    echo ${dist} | cut -d: -f 2
+}
 
-docker build --network host \
-       -f Dockerfile.opendylan-devel \
-       --build-arg "OPENDYLAN_BASE=opendylan:current-base-bullseye" \
-       -t opendylan:current \
-       -t opendylan:current-bullseye \
-       -t opendylan:latest \
-       -t opendylan:latest-bullseye \
-       empty
+# build images with release opendylan
+for dist in ${DISTS}; do
+    distrelease=$(distrel ${dist})
+    docker build --network host \
+           -f Dockerfile.opendylan-release \
+           --build-arg OPENDYLAN_BASE=${dist} \
+           -t opendylan:release-${distrelease} \
+           ./dist
+done
 
+docker tag opendylan:release-buster opendylan:release
+
+# build images with current opendylan
+for dist in ${DISTS}; do
+    distrelease=$(distrel ${dist})
+    docker build --network host \
+           -f Dockerfile.opendylan-current \
+           --build-arg OPENDYLAN_BASE=${dist} \
+           -t opendylan:current-${distrelease} \
+ 	   ./dist
+done
+
+docker tag opendylan:current-buster opendylan:current
+
+# use the current image as latest for now
+
+docker tag opendylan:current-buster   opendylan:latest
+docker tag opendylan:current-buster   opendylan:latest-buster
+docker tag opendylan:current-bullseye opendylan:latest-bullseye
