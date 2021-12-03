@@ -70,8 +70,6 @@ RUN git clone "https://github.com/dylan-lang/dylan-tool.git" --recursive \
 
 FROM depends
 
-WORKDIR /opt
-
 # Copy the contents of the tarball
 COPY --from=build /opt /opt
 
