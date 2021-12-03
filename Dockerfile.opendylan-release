@@ -14,6 +14,12 @@ ENV OPENDYLAN_PLATFORM "x86_64-linux"
 # Our runtime dependencies
 ENV OPENDYLAN_DEPENDS "dumb-init bzip2"
 
+# Set DYLAN variable
+ENV DYLAN "/opt/opendylan"
+
+# Add opendylan to the PATH
+ENV PATH "/opt/opendylan/bin:${PATH}"
+
 # Install runtime dependencies
 RUN apt-get update \
  && apt-get -y install ${OPENDYLAN_DEPENDS} \
@@ -52,11 +58,11 @@ WORKDIR /opt
 # Copy the contents of the tarball
 COPY --from=build /opt /opt
 
-# Add opendylan to the PATH
-ENV PATH "/bob/dylan/bin:/opt/opendylan/bin:${PATH}"
-
 # Set DYLAN variable
 ENV DYLAN "/bob/dylan"
+
+# Add bobs dylan directory to the PATH
+ENV PATH "/bob/dylan/bin:${PATH}"
 
 # Switch to our user
 USER bob
