@@ -23,8 +23,10 @@ ENV PATH "/opt/opendylan/bin:${PATH}"
 # Install dependencies
 RUN apt-get update \
  && apt-get -y install ${OPENDYLAN_DEPENDS} \
- && apt-get clean \
- && adduser --disabled-password --gecos "Dylan User" --home /bob bob
+ && apt-get clean
+
+# Create user bob
+RUN adduser --disabled-password --gecos "Dylan User" --home /bob bob
 
 ##########################################
 # Create an image to perform the build in
