@@ -14,6 +14,9 @@ ENV OPENDYLAN_PLATFORM "x86_64-linux"
 # Our dependencies
 ENV OPENDYLAN_DEPENDS "dumb-init autoconf automake build-essential bzip2 clang git-core llvm make libgc-dev libunwind-dev"
 
+# Version of dylan-tool to use
+ENV DYLANTOOL_VERSION "master"
+
 # Set DYLAN variable
 ENV DYLAN "/opt/opendylan"
 
@@ -59,6 +62,12 @@ RUN git clone "https://github.com/dylan-lang/opendylan.git" --recursive \
  && make PATH="/build/release/bin:${PATH}" \
  && make install
 
+# Check out, build and install dylan-tool
+RUN git clone "https://github.com/dylan-lang/dylan-tool.git" --recursive \
+ && cd dylan-tool \
+ && git checkout ${DYLANTOOL_VERSION} \
+ && make \
+ && make install
 
 ##########################
 # Create the actual image
