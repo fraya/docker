@@ -29,7 +29,7 @@ for dist in ${CURRENT_DISTS}; do
            -f Dockerfile.opendylan-current \
            --build-arg OPENDYLAN_BASE=${dist} \
            -t opendylan:current-${distrelease} \
- 	   ./dist
+           ./dist
 done
 
 docker tag opendylan:current-bullseye opendylan:current
