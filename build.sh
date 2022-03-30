@@ -2,8 +2,8 @@
 
 set -e
 
-DISTS="debian:buster debian:bullseye"
-#" ubuntu:impish ubuntu:jammy"
+RELEASE_DISTS="debian:buster debian:bullseye ubuntu:impish ubuntu:jammy"
+CURRENT_DISTS="debian:bullseye"
 
 distrel() {
     local dist="$1"
@@ -11,7 +11,7 @@ distrel() {
 }
 
 # build images with release opendylan
-for dist in ${DISTS}; do
+for dist in ${RELEASE_DISTS}; do
     distrelease=$(distrel ${dist})
     docker build --network host \
            -f Dockerfile.opendylan-release \
@@ -23,7 +23,7 @@ done
 docker tag opendylan:release-buster opendylan:release
 
 # build images with current opendylan
-for dist in ${DISTS}; do
+for dist in ${CURRENT_DISTS}; do
     distrelease=$(distrel ${dist})
     docker build --network host \
            -f Dockerfile.opendylan-current \
