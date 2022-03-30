@@ -20,7 +20,7 @@ for dist in ${RELEASE_DISTS}; do
            ./dist
 done
 
-docker tag opendylan:release-buster opendylan:release
+docker tag opendylan:release-bullseye opendylan:release
 
 # build images with current opendylan
 for dist in ${CURRENT_DISTS}; do
@@ -32,10 +32,8 @@ for dist in ${CURRENT_DISTS}; do
  	   ./dist
 done
 
-docker tag opendylan:current-buster opendylan:current
+docker tag opendylan:current-bullseye opendylan:current
 
 # use the current image as latest for now
 
-docker tag opendylan:current-buster   opendylan:latest
-docker tag opendylan:current-buster   opendylan:latest-buster
-docker tag opendylan:current-bullseye opendylan:latest-bullseye
+docker tag opendylan:current          opendylan:latest
