@@ -2,9 +2,11 @@
 
 set -e
 
+# distributions to build for
 RELEASE_DISTS="debian:buster debian:bullseye ubuntu:impish ubuntu:jammy"
-CURRENT_DISTS="debian:bullseye"
+CURRENT_DISTS="debian:buster debian:bullseye"
 
+# helper function
 distrel() {
     local dist="$1"
     echo ${dist} | cut -d: -f 2
@@ -13,27 +15,31 @@ distrel() {
 # build images with release opendylan
 for dist in ${RELEASE_DISTS}; do
     distrelease=$(distrel ${dist})
-    docker build --network host \
+    docker build ./dist \
            -f Dockerfile.opendylan-release \
-           --build-arg OPENDYLAN_BASE=${dist} \
            -t opendylan:release-${distrelease} \
-           ./dist
+		   --build-arg OPENDYLAN_BASE=${dist} \
+		   --network host \
+           "$@"
 done
 
+# use bullseye as default for release
 docker tag opendylan:release-bullseye opendylan:release
 
 # build images with current opendylan
 for dist in ${CURRENT_DISTS}; do
     distrelease=$(distrel ${dist})
-    docker build --network host \
+    docker build ./dist \
            -f Dockerfile.opendylan-current \
+		   -t opendylan:current-${distrelease} \
            --build-arg OPENDYLAN_BASE=${dist} \
-           -t opendylan:current-${distrelease} \
-           ./dist
+		   --network host \
+           "$@"
 done
 
+# use bullseye as default for current
 docker tag opendylan:current-bullseye opendylan:current
 
 # use the current image as latest for now
-
 docker tag opendylan:current          opendylan:latest
+
