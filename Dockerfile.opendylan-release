@@ -72,19 +72,3 @@ FROM depends
 
 # Copy the contents of the tarball
 COPY --from=build /opt /opt
-
-# Set DYLAN variable
-ENV DYLAN "/bob/dylan"
-
-# Add bobs dylan directory to the PATH
-ENV PATH "/bob/dylan/bin:${PATH}"
-
-# Switch to our user
-USER bob
-WORKDIR /bob
-
-# Create bobs dylan workspace
-RUN mkdir -p dylan/bin
-
-# Set the entrypoint
-ENTRYPOINT [ "dumb-init", "dylan-environment" ]
