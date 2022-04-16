@@ -16,7 +16,7 @@ distrel() {
 for dist in ${RELEASE_DISTS}; do
     distrelease=$(distrel ${dist})
     docker build ./dist \
-           -f Dockerfile.opendylan-release \
+           -f Dockerfile.release \
            -t opendylan:release-${distrelease} \
 		   --build-arg OPENDYLAN_BASE=${dist} \
 		   --network host \
@@ -30,7 +30,7 @@ docker tag opendylan:release-bullseye opendylan:release
 for dist in ${CURRENT_DISTS}; do
     distrelease=$(distrel ${dist})
     docker build ./dist \
-           -f Dockerfile.opendylan-current \
+           -f Dockerfile.current \
 		   -t opendylan:current-${distrelease} \
            --build-arg OPENDYLAN_BASE=${dist} \
 		   --network host \
