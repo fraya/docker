@@ -33,9 +33,6 @@ RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get -y install ${OPENDYLAN_DEPENDS} \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Create user bob
-RUN adduser --disabled-password --gecos "Dylan User" --home /bob bob
-
 ############################################
 # Create an image to extract the tarball in
 ############################################
