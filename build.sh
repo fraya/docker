@@ -4,7 +4,7 @@ set -e
 
 # distributions to build for
 RELEASE_DISTS="debian:buster debian:bullseye ubuntu:impish ubuntu:jammy"
-CURRENT_DISTS="debian:buster debian:bullseye"
+CURRENT_DISTS="debian:buster debian:bullseye ubuntu:impish ubuntu:jammy"
 
 # helper function
 distrel() {
