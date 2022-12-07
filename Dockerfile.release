@@ -13,7 +13,7 @@ ARG OPENDYLAN_BASE
 FROM ${OPENDYLAN_BASE} as depends
 
 # Add some manifest variables
-ENV OPENDYLAN_VERSION "2020.1"
+ENV OPENDYLAN_VERSION "2022.1"
 ENV OPENDYLAN_PLATFORM "x86_64-linux"
 
 # Our runtime dependencies
