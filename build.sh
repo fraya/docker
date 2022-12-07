@@ -18,8 +18,7 @@ for dist in ${RELEASE_DISTS}; do
     docker build ./dist \
            -f Dockerfile.release \
            -t opendylan:release-${distrelease} \
-		   --build-arg OPENDYLAN_BASE=${dist} \
-		   --network host \
+           --build-arg OPENDYLAN_BASE=${dist} \
            "$@"
 done
 
@@ -31,9 +30,8 @@ for dist in ${CURRENT_DISTS}; do
     distrelease=$(distrel ${dist})
     docker build ./dist \
            -f Dockerfile.current \
-		   -t opendylan:current-${distrelease} \
+           -t opendylan:current-${distrelease} \
            --build-arg OPENDYLAN_BASE=${dist} \
-		   --network host \
            "$@"
 done
 
