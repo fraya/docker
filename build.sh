@@ -3,8 +3,8 @@
 set -e
 
 # distributions to build for
-RELEASE_DISTS="debian:buster debian:bullseye ubuntu:impish ubuntu:jammy"
-CURRENT_DISTS="debian:buster debian:bullseye ubuntu:impish ubuntu:jammy"
+RELEASE_DISTS="debian:bullseye ubuntu:jammy ubuntu:kinetic"
+CURRENT_DISTS="debian:bullseye ubuntu:jammy ubuntu:kinetic"
 
 # helper function
 distrel() {
