@@ -15,13 +15,10 @@ FROM ${OPENDYLAN_BASE} AS depends
 # Add some manifest variables
 ENV OPENDYLAN_VERSION "master"
 ENV OPENDYLAN_PLATFORM "x86_64-linux"
+ENV DEFT_VERSION "main"
 
 # Our dependencies
-ENV OPENDYLAN_DEPENDS "dumb-init autoconf automake build-essential bzip2 clang-11 git-core llvm-11 make libgc-dev libunwind-dev"
-
-# Version of dylan-tool to use
-ENV DYLANTOOL_VERSION "master"
-
+ENV OPENDYLAN_DEPENDS "dumb-init autoconf automake bzip2 clang-19 git-core libgc-dev make"
 # Set DYLAN variable
 ENV DYLAN "/opt/opendylan"
 
@@ -42,7 +39,7 @@ FROM depends AS build
 WORKDIR /build
 
 # Variables for the bootstrap compiler
-ENV RELEASE_VERSION "2022.1"
+ENV RELEASE_VERSION "2024.1"
 ENV RELEASE_PLATFORM "${OPENDYLAN_PLATFORM}"
 ENV RELEASE_DIR "opendylan-${RELEASE_VERSION}"
 ENV RELEASE_TBZ "opendylan-${RELEASE_VERSION}-${RELEASE_PLATFORM}.tar.bz2"
@@ -64,10 +61,11 @@ RUN git clone "https://github.com/dylan-lang/opendylan.git" --recursive \
  && make PATH="/build/release/bin:${PATH}" \
  && make install
 
-# Check out, build and install dylan-tool
-RUN git clone "https://github.com/dylan-lang/dylan-tool.git" --recursive \
- && cd dylan-tool \
- && git checkout ${DYLANTOOL_VERSION} \
+# Check out, build and install 'deft'
+RUN git clone "https://github.com/dylan-lang/deft.git" --recursive \
+ && cd deft \
+ && git checkout ${DEFT_VERSION} \
+ && export PATH="/build/release/bin:${PATH}" \
  && make \
  && make install
 

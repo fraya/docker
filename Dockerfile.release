@@ -13,14 +13,11 @@ ARG OPENDYLAN_BASE
 FROM ${OPENDYLAN_BASE} as depends
 
 # Add some manifest variables
-ENV OPENDYLAN_VERSION "2022.1"
+ENV OPENDYLAN_VERSION "2024.1"
 ENV OPENDYLAN_PLATFORM "x86_64-linux"
 
 # Our runtime dependencies
 ENV OPENDYLAN_DEPENDS "dumb-init build-essential bzip2 git-core"
-
-# Version of dylan-tool to use
-ENV DYLANTOOL_VERSION "master"
 
 # Set DYLAN variable
 ENV DYLAN "/opt/opendylan"
@@ -53,13 +50,6 @@ RUN tar xfj "${OPENDYLAN_TBZ}" \
  && ln -s "${OPENDYLAN_DIR}" opendylan \
  && ln -s "${OPENDYLAN_DIR}" opendylan-release \
  && rm "${OPENDYLAN_TBZ}"
-
-# Check out, build and install dylan-tool
-RUN git clone "https://github.com/dylan-lang/dylan-tool.git" --recursive \
- && cd dylan-tool \
- && git checkout ${DYLANTOOL_VERSION} \
- && make \
- && make install
 
 ##########################
 # Create the actual image
